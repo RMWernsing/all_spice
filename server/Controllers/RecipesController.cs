@@ -29,4 +29,18 @@ public class RecipesController : ControllerBase
       throw new Exception(error.Message);
     }
   }
+
+  [HttpGet]
+  public ActionResult<List<Recipe>> GetAllRecipes()
+  {
+    try
+    {
+      List<Recipe> recipes = _recipesService.GetAllRecipes();
+      return recipes;
+    }
+    catch (Exception error)
+    {
+      throw new Exception(error.Message);
+    }
+  }
 }
