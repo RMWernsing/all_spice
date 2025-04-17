@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+
 namespace all_spice.Controllers;
 
 [ApiController]
@@ -26,7 +28,7 @@ public class RecipesController : ControllerBase
     }
     catch (Exception error)
     {
-      throw new Exception(error.Message);
+      return BadRequest(error.Message);
     }
   }
 
@@ -40,7 +42,7 @@ public class RecipesController : ControllerBase
     }
     catch (Exception error)
     {
-      throw new Exception(error.Message);
+      return BadRequest(error.Message);
     }
   }
 
@@ -54,7 +56,7 @@ public class RecipesController : ControllerBase
     }
     catch (Exception error)
     {
-      throw new Exception(error.Message);
+      return BadRequest(error.Message);
     }
   }
 
@@ -70,7 +72,23 @@ public class RecipesController : ControllerBase
     }
     catch (Exception error)
     {
-      throw new Exception(error.Message);
+      return BadRequest(error.Message);
+    }
+  }
+
+  [HttpDelete("{recipeId}")]
+  [Authorize]
+  public async Task<ActionResult<string>> DeleteRecipe(int recipeId)
+  {
+    try
+    {
+      Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
+      _recipesService.DeleteRecipe(recipeId, userInfo);
+      return "You have successfully deleted your recipe!";
+    }
+    catch (Exception error)
+    {
+      return BadRequest(error.Message);
     }
   }
 }

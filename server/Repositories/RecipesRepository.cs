@@ -85,7 +85,18 @@ public class RecipesRepository
     int rowsAffected = _db.Execute(sql, recipe);
     if (rowsAffected != 1)
     {
-      throw new Exception("you updated the wrong number of recipes. check your data");
+      throw new Exception($"You have updated {rowsAffected} rows and that is bad");
+    }
+  }
+
+  internal void DeleteRecipe(int recipeId)
+  {
+    string sql = "DELETE FROM recipes WHERE id = @recipeId LIMIT 1;";
+
+    int rowsAffected = _db.Execute(sql, new { recipeId });
+    if (rowsAffected != 1)
+    {
+      throw new Exception($"You have deleted {rowsAffected} rows and that is bad");
     }
   }
 }

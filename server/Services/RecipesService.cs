@@ -49,4 +49,14 @@ public class RecipesService
     _repository.UpdateRecipe(recipe);
     return recipe;
   }
+
+  internal void DeleteRecipe(int recipeId, Account userInfo)
+  {
+    Recipe recipe = GetRecipeById(recipeId);
+    if (recipe.CreatorId != userInfo.Id)
+    {
+      throw new Exception($"YOU DO NOT HAVE PERMISSION TO DELETE THIS POST {userInfo.Name.ToUpper()}");
+    }
+    _repository.DeleteRecipe(recipeId);
+  }
 }
