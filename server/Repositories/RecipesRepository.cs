@@ -1,6 +1,9 @@
 
 
 
+
+using System.ComponentModel;
+
 namespace all_spice.Repositories;
 
 public class RecipesRepository
@@ -24,7 +27,7 @@ public class RecipesRepository
     FROM recipes
     INNER JOIN accounts ON accounts.id = recipes.creator_id
     WHERE recipes.id = LAST_INSERT_ID();";
-    Recipe recipe = _db.Query(sql, (Recipe recipe, Account account) =>
+    Recipe recipe = _db.Query(sql, (Recipe recipe, Profile account) =>
     {
       recipe.Creator = account;
       return recipe;
@@ -41,7 +44,7 @@ public class RecipesRepository
     FROM recipes
     INNER JOIN accounts ON accounts.id = recipes.creator_id;";
 
-    List<Recipe> recipes = _db.Query(sql, (Recipe recipe, Account account) =>
+    List<Recipe> recipes = _db.Query(sql, (Recipe recipe, Profile account) =>
     {
       recipe.Creator = account;
       return recipe;
@@ -59,11 +62,30 @@ public class RecipesRepository
     INNER JOIN accounts ON accounts.id = recipes.creator_id
     WHERE recipes.id = @recipeId;";
 
-    Recipe recipe = _db.Query(sql, (Recipe recipe, Account account) =>
+    Recipe recipe = _db.Query(sql, (Recipe recipe, Profile account) =>
     {
       recipe.Creator = account;
       return recipe;
     }, new { recipeId }).SingleOrDefault();
     return recipe;
+  }
+
+  internal void UpdateRecipe(Recipe recipe)
+  {
+    string sql = @"
+    UPDATE recipes
+    SET
+    title = @Title,
+    instructions = @Instructions,
+    img = @Img,
+    category = @Category
+    WHERE id = @Id
+    LIMIT 1;";
+
+    int rowsAffected = _db.Execute(sql, recipe);
+    if (rowsAffected != 1)
+    {
+      throw new Exception("you updated the wrong number of recipes. check your data");
+    }
   }
 }

@@ -1,6 +1,7 @@
 
 
 
+
 namespace all_spice.Services;
 
 public class RecipesService
@@ -26,6 +27,26 @@ public class RecipesService
   internal Recipe GetRecipeById(int recipeId)
   {
     Recipe recipe = _repository.GetRecipeById(recipeId);
+    if (recipe == null)
+    {
+      throw new Exception($"{recipeId} Id does not exist on an existing recipe");
+    }
+    return recipe;
+  }
+
+  internal Recipe UpdateRecipe(Recipe recipeData, int recipeId, Account userInfo)
+  {
+    Recipe recipe = GetRecipeById(recipeId);
+    if (recipe.CreatorId != userInfo.Id)
+    {
+      throw new Exception($"YOU DO NOT HAVE ACCESS TO UPDATE SOMEONE ELSES RECIPE {userInfo.Name.ToUpper()}");
+    }
+    recipe.Title = recipeData.Title ?? recipe.Title;
+    recipe.Instructions = recipeData.Instructions ?? recipe.Instructions;
+    recipe.Img = recipeData.Img ?? recipe.Img;
+    recipe.Category = recipeData.Category ?? recipe.Category;
+
+    _repository.UpdateRecipe(recipe);
     return recipe;
   }
 }
