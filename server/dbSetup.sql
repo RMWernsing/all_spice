@@ -14,9 +14,11 @@ CREATE TABLE recipes(
   title VARCHAR(255) NOT NULL,
   instructions VARCHAR(5000),
   img VARCHAR(1000),
-  category ENUM('breakfast', 'lunch', 'dinner', 'snack', 'dessert'),
+  category ENUM('breakfast', 'lunch', 'dinner', 'snack', 'dessert') NOT NULL,
   creator_id VARCHAR(255) NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
 SELECT * FROM recipes;
+
+DROP TABLE recipes;

@@ -1,7 +1,7 @@
 namespace all_spice.Models;
 
 
-public class RecipesController
+public class Recipe
 {
   public int Id { get; set; }
   public DateTime CreatedAt { get; set; }
