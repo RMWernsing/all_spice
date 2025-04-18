@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace all_spice.Controllers;
@@ -6,13 +7,15 @@ namespace all_spice.Controllers;
 [Route("api/[controller]")]
 public class RecipesController : ControllerBase
 {
-  public RecipesController(Auth0Provider auth0Provider, RecipesService recipesService)
+  public RecipesController(Auth0Provider auth0Provider, RecipesService recipesService, IngredientsService ingredientsService)
   {
     _auth0Provider = auth0Provider;
     _recipesService = recipesService;
+    _ingredientsService = ingredientsService;
   }
   private readonly Auth0Provider _auth0Provider;
   private readonly RecipesService _recipesService;
+  private readonly IngredientsService _ingredientsService;
 
 
   [HttpPost]
@@ -33,11 +36,19 @@ public class RecipesController : ControllerBase
   }
 
   [HttpGet]
-  public ActionResult<List<Recipe>> GetAllRecipes()
+  public ActionResult<List<Recipe>> GetRecipes([FromQuery] string category)
   {
     try
     {
-      List<Recipe> recipes = _recipesService.GetAllRecipes();
+      List<Recipe> recipes;
+      if (category == null)
+      {
+        recipes = _recipesService.GetAllRecipes();
+      }
+      else
+      {
+        recipes = _recipesService.GetAllRecipes(category);
+      }
       return Ok(recipes);
     }
     catch (Exception error)
@@ -85,6 +96,20 @@ public class RecipesController : ControllerBase
       Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
       _recipesService.DeleteRecipe(recipeId, userInfo);
       return "You have successfully deleted your recipe!";
+    }
+    catch (Exception error)
+    {
+      return BadRequest(error.Message);
+    }
+  }
+
+  [HttpGet("{recipeId}/ingredients")]
+  public ActionResult<List<Ingredient>> GetIngredientsForRecipe(int recipeId)
+  {
+    try
+    {
+      List<Ingredient> ingredients = _ingredientsService.GetIngredientsForRecipe(recipeId);
+      return ingredients;
     }
     catch (Exception error)
     {

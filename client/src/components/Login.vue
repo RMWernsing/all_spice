@@ -21,6 +21,10 @@ function logout() {
       Login
     </button>
     <div v-else>
+      <div class="list-group-item dropdown-item list-group-item-action text-danger selectable" @click="logout">
+        <i class="mdi mdi-logout"></i>
+        logout
+      </div>
       <div class="dropdown">
         <div role="button" class="bg-dark selectable no-select" data-bs-toggle="dropdown" aria-expanded="false"
           title="open account menu">
@@ -35,10 +39,6 @@ function logout() {
                 Manage Account
               </div>
             </RouterLink>
-            <div class="list-group-item dropdown-item list-group-item-action text-danger selectable" @click="logout">
-              <i class="mdi mdi-logout"></i>
-              logout
-            </div>
           </div>
         </div>
       </div>

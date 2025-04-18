@@ -99,4 +99,22 @@ public class RecipesRepository
       throw new Exception($"You have deleted {rowsAffected} rows and that is bad");
     }
   }
+
+  internal List<Recipe> GetRecipesByCategory(string category)
+  {
+    string sql = @"
+    SELECT
+    recipes.*,
+    accounts.*
+    FROM recipes
+    INNER JOIN accounts ON accounts.id = recipes.creator_id
+    WHERE recipes.category LIKE @category;";
+
+    List<Recipe> recipes = _db.Query(sql, (Recipe recipe, Profile account) =>
+    {
+      recipe.Creator = account;
+      return recipe;
+    }, new { category = $"%{category}%" }).ToList();
+    return recipes;
+  }
 }

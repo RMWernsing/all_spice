@@ -1,15 +1,48 @@
 <script setup>
+import { AppState } from '@/AppState.js';
+import CreateRecipeModal from '@/components/CreateRecipeModal.vue';
+import RecipeCard from '@/components/RecipeCard.vue';
+import { recipesService } from '@/services/RecipesService.js';
+import { logger } from '@/utils/Logger.js';
+import { Pop } from '@/utils/Pop.js';
+import { computed, onMounted, ref } from 'vue';
 
+onMounted(() => {
+  getRecipes()
+})
+const recipes = computed(() => AppState.recipes)
 
+const editableSearchData = ref('')
+
+async function getRecipes() {
+  try {
+    await recipesService.getRecipes()
+  }
+  catch (error) {
+    Pop.error(error, "Could not get recipes")
+    logger.error("COULD NOT GET RECIPES", error)
+  }
+}
+
+async function getRecipesBySearch() {
+  try {
+    await recipesService.getRecipesBySearch(editableSearchData.value)
+  }
+  catch (error) {
+    Pop.error(error, "Could not get recipes by search query")
+    logger.error("COULD NOT GET RECIPES BY SEARCH QUERY", error)
+  }
+}
 </script>
 
 <template>
   <section class="container-fluid">
     <div class="row spice-bg justify-content-end">
       <div class="col-md-3 mt-3 px-2">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+        <form @submit.prevent="getRecipesBySearch()" class="d-flex" role="search">
+          <input v-model="editableSearchData" class="form-control me-2" type="search" placeholder="Search By Category"
+            aria-label="Search">
+          <button class="btn btn-outline-dark" type="submit">Search</button>
         </form>
       </div>
       <div class="col-12">
@@ -22,6 +55,16 @@
       </div>
     </div>
   </section>
+  <section class="container">
+    <div class="row">
+      <div v-for="recipe in recipes" :key="recipe.id" class="col-md-4">
+        <RecipeCard :recipe="recipe" />
+      </div>
+    </div>
+  </section>
+  <button type="button" class="btn btn-success fixed-button" data-bs-toggle="modal" data-bs-target="#createRecipe">+
+    Recipe</button>
+  <CreateRecipeModal />
 </template>
 
 <style scoped lang="scss">
@@ -34,5 +77,11 @@
 
 .text-shadow {
   text-shadow: 1px 1px 5px black;
+}
+
+.fixed-button {
+  position: fixed;
+  top: 94dvh;
+  right: 20px;
 }
 </style>
