@@ -58,4 +58,23 @@ public class FavoritesRepository
     }, new { accountId }).ToList();
     return favoriteRecipes;
   }
+
+  internal Favorite GetFavoriteById(int favoriteId)
+  {
+    string sql = "SELECT * FROM favorites WHERE favorites.id = @favoriteId";
+
+    Favorite favorite = _db.Query<Favorite>(sql, new { favoriteId }).SingleOrDefault();
+    return favorite;
+  }
+
+  internal void DeleteFavorite(int favoriteId)
+  {
+    string sql = "DELETE FROM favorites WHERE id = @favoriteId LIMIT 1;";
+
+    int rowsAffected = _db.Execute(sql, new { favoriteId });
+    if (rowsAffected != 1)
+    {
+      throw new Exception("YOU HAVE DELETED MORE OR LESS THAN ON ROW. PLEASE CHECK YOUR DATA FOR UNEXPECTED CHANGES");
+    }
+  }
 }
