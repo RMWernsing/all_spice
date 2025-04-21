@@ -13,11 +13,13 @@ public class IngredientsController : ControllerBase
   private readonly Auth0Provider _auth0Provider;
 
   [HttpPost]
-  public ActionResult<Ingredient> CreateIngredient([FromBody] Ingredient ingredientData)
+  [Authorize]
+  public async Task<ActionResult<Ingredient>> CreateIngredient([FromBody] Ingredient ingredientData)
   {
     try
     {
-      Ingredient ingredient = _ingredientsService.CreateIngredient(ingredientData);
+      Account userInfo = await _auth0Provider.GetUserInfoAsync<Account>(HttpContext);
+      Ingredient ingredient = _ingredientsService.CreateIngredient(ingredientData, userInfo);
       return Ok(ingredient);
     }
     catch (Exception error)
