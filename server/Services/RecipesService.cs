@@ -65,4 +65,10 @@ public class RecipesService
     }
     _repository.DeleteRecipe(recipeId);
   }
+
+  internal List<Recipe> GetRecipeByAccount(string accountId)
+  {
+    List<Recipe> recipes = _repository.GetRecipeByAccount(accountId);
+    return recipes;
+  }
 }

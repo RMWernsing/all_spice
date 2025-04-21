@@ -11,8 +11,11 @@ onMounted(() => {
   getRecipes()
 })
 const recipes = computed(() => AppState.recipes)
+const account = computed(() => AppState.account)
 
 const editableSearchData = ref('')
+
+const recipesType = ref('all')
 
 async function getRecipes() {
   try {
@@ -33,16 +36,36 @@ async function getRecipesBySearch() {
     logger.error("COULD NOT GET RECIPES BY SEARCH QUERY", error)
   }
 }
+
+async function getMyRecipes() {
+  try {
+    await recipesService.getMyRecipes()
+  }
+  catch (error) {
+    Pop.error(error, "Could not get your recipes")
+    logger.error("COULD NOT GET YOUR RECIPES", error)
+  }
+}
+
+async function getFavoriteRecipes() {
+  try {
+    await recipesService.getFavoriteRecipes()
+  }
+  catch (error) {
+    Pop.error(error, "Could not get your favorite recipes")
+    logger.error("COULD NOT GET YOUR FAVORITE RECIPES", error)
+  }
+}
 </script>
 
 <template>
-  <section class="container-fluid">
+  <section class="container-fluid position-relative">
     <div class="row spice-bg justify-content-end">
       <div class="col-md-3 mt-3 px-2">
         <form @submit.prevent="getRecipesBySearch()" class="d-flex" role="search">
           <input v-model="editableSearchData" class="form-control me-2" type="search" placeholder="Search By Category"
             aria-label="Search">
-          <button class="btn btn-outline-dark" type="submit">Search</button>
+          <button class="btn btn-outline-dark" type="submit" title="search">Search</button>
         </form>
       </div>
       <div class="col-12">
@@ -54,15 +77,25 @@ async function getRecipesBySearch() {
         </div>
       </div>
     </div>
+    <div v-if="account" class="row justify-content-center m-0 ">
+      <div class="col-sm-10 col-md-5 position-absolute button-position">
+        <div class="bg-light d-flex justify-content-between rounded p-3 shadow px-4 text-success fw-bold">
+          <p @click="getRecipes()" type="button" title="Home" :class="{ 'text-danger': recipesType == 'all' }">Home</p>
+          <p @click="getMyRecipes()" type="button" title="show my recipes">My Recipes</p>
+          <p @click="getFavoriteRecipes()" type="button" title="show my favorite">Favorites</p>
+        </div>
+      </div>
+    </div>
   </section>
   <section class="container">
-    <div class="row">
+    <div class="row mt-5">
       <div v-for="recipe in recipes" :key="recipe.id" class="col-md-4">
         <RecipeCard :recipe="recipe" />
       </div>
     </div>
   </section>
-  <button type="button" class="btn btn-success fixed-button" data-bs-toggle="modal" data-bs-target="#createRecipe">+
+  <button v-if="account" type="button" class="btn btn-success fixed-button" data-bs-toggle="modal"
+    data-bs-target="#createRecipe">+
     Recipe</button>
   <CreateRecipeModal />
 </template>
@@ -72,7 +105,7 @@ async function getRecipesBySearch() {
   background-image: url(https://images.unsplash.com/photo-1502741384106-56538427cde9?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
   background-position: center;
   background-size: cover;
-  min-height: 57dvh;
+  min-height: 40rem;
 }
 
 .text-shadow {
@@ -83,5 +116,9 @@ async function getRecipesBySearch() {
   position: fixed;
   top: 94dvh;
   right: 20px;
+}
+
+.button-position {
+  top: 37.5rem;
 }
 </style>

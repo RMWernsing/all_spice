@@ -41,6 +41,8 @@ CREATE TABLE favorites(
 
 SELECT * FROM recipes;
 
+DELETE FROM recipes;
+
 DROP TABLE recipes;
 
 SELECT * FROM ingredients;
