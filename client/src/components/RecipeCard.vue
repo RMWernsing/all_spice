@@ -1,15 +1,42 @@
 <script setup>
 import { Recipe } from '@/models/Recipe.js';
+import { ingredientsService } from '@/services/IngredientsService.js';
+import { recipesService } from '@/services/RecipesService.js';
+import { logger } from '@/utils/Logger.js';
+import { Pop } from '@/utils/Pop.js';
 
 
 defineProps({
   recipe: { type: Recipe, required: true }
 })
+
+async function getRecipeById(recipeId) {
+  try {
+    await recipesService.getRecipeById(recipeId)
+    getIngredientsForRecipe(recipeId)
+  }
+  catch (error) {
+    Pop.error(error, 'Could not get recipe')
+    logger.log('COULD NOT GET RECIPE BY ID', error)
+  }
+}
+
+async function getIngredientsForRecipe(recipeId) {
+  try {
+    await ingredientsService.getIngredientsForRecipe(recipeId)
+  }
+  catch (error) {
+    Pop.error(error, 'Could not get ingredients')
+    logger.error('COULD NOT GET INGREDIENTS', error)
+  }
+}
 </script>
 
 
 <template>
-  <div class="card-style mt-5 d-flex flex-column justify-content-between shadow-lg rounded"
+  <div @click="getRecipeById(recipe.id)" type="button" :title="`see recipe details for ${recipe.title}`"
+    data-bs-toggle="modal" data-bs-target="#recipeDetailsModal"
+    class="card-style mt-5 d-flex flex-column justify-content-between shadow-lg rounded"
     :style="{ backgroundImage: `url(${recipe.img})` }">
     <div>
       <div class="m-2 d-flex justify-content-between">

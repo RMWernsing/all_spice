@@ -1,6 +1,7 @@
 <script setup>
 import { AppState } from '@/AppState.js';
 import CreateRecipeModal from '@/components/CreateRecipeModal.vue';
+import RecipeDetailsModal from '@/components/globals/RecipeDetailsModal.vue';
 import RecipeCard from '@/components/RecipeCard.vue';
 import { recipesService } from '@/services/RecipesService.js';
 import { logger } from '@/utils/Logger.js';
@@ -103,6 +104,7 @@ async function getFavoriteRecipes() {
     data-bs-target="#createRecipe">+
     Recipe</button>
   <CreateRecipeModal />
+  <RecipeDetailsModal />
 </template>
 
 <style scoped lang="scss">
