@@ -15,11 +15,12 @@ const account = computed(() => AppState.account)
 
 const editableSearchData = ref('')
 
-const recipesType = ref('all')
+const recipesType = ref('')
 
 async function getRecipes() {
   try {
     await recipesService.getRecipes()
+    recipesType.value = 'all'
   }
   catch (error) {
     Pop.error(error, "Could not get recipes")
@@ -40,6 +41,7 @@ async function getRecipesBySearch() {
 async function getMyRecipes() {
   try {
     await recipesService.getMyRecipes()
+    recipesType.value = 'my recipes'
   }
   catch (error) {
     Pop.error(error, "Could not get your recipes")
@@ -50,6 +52,7 @@ async function getMyRecipes() {
 async function getFavoriteRecipes() {
   try {
     await recipesService.getFavoriteRecipes()
+    recipesType.value = 'favorites'
   }
   catch (error) {
     Pop.error(error, "Could not get your favorite recipes")
@@ -81,8 +84,10 @@ async function getFavoriteRecipes() {
       <div class="col-sm-10 col-md-5 position-absolute button-position">
         <div class="bg-light d-flex justify-content-between rounded p-3 shadow px-4 text-success fw-bold">
           <p @click="getRecipes()" type="button" title="Home" :class="{ 'text-danger': recipesType == 'all' }">Home</p>
-          <p @click="getMyRecipes()" type="button" title="show my recipes">My Recipes</p>
-          <p @click="getFavoriteRecipes()" type="button" title="show my favorite">Favorites</p>
+          <p @click="getMyRecipes()" type="button" title="show my recipes"
+            :class="{ 'text-danger': recipesType == 'my recipes' }">My Recipes</p>
+          <p @click="getFavoriteRecipes()" type="button" title="show my favorite"
+            :class="{ 'text-danger': recipesType == 'favorites' }">Favorites</p>
         </div>
       </div>
     </div>
