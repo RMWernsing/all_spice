@@ -4,6 +4,19 @@ import { Recipe } from "@/models/Recipe.js"
 import { AppState } from "@/AppState.js"
 
 class RecipesService {
+  async deleteRecipe(recipeId) {
+    const response = await api.delete(`api/recipes/${recipeId}`)
+    logger.log('you deleted a recipe!', response.data)
+    const recipes = AppState.recipes
+    const index = recipes.findIndex(recipe => recipe.id == recipeId)
+    recipes.splice(index, 1)
+  }
+  async updateRecipe(recipeData, recipeId) {
+    const response = await api.put(`api/recipes/${recipeId}`, { instructions: recipeData })
+    // logger.log('here is your new recipe', response.data)
+    const recipe = new Recipe(response.data)
+    AppState.activeRecipe = recipe
+  }
   async getRecipeById(recipeId) {
     AppState.activeRecipe = null
     const response = await api.get(`api/recipes/${recipeId}`)
